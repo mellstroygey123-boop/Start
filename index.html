@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Sizda treyderlik talanti bormi?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .quiz-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+
+        .question-number {
+            color: #e94560;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .question {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            background: rgba(233, 69, 96, 0.15);
+            border-color: rgba(233, 69, 96, 0.4);
+            transform: translateX(5px);
+        }
+
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            background: rgba(233, 69, 96, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: 700;
+            color: #e94560;
+            flex-shrink: 0;
+        }
+
+        .result-card {
+            text-align: center;
+            display: none;
+        }
+
+        .result-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 50px;
+            box-shadow: 0 15px 50px rgba(233, 69, 96, 0.4);
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .result-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 26px;
+            margin-bottom: 15px;
+        }
+
+        .result-subtitle {
+            color: #e94560;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .result-text {
+            color: #a0a0a0;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .traits {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .trait {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .trait:last-child {
+            margin-bottom: 0;
+        }
+
+        .trait-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(233, 69, 96, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .trait-text {
+            font-size: 14px;
+            color: #e0e0e0;
+        }
+
+        .btn-telegram {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0088cc 0%, #00a8e8 100%);
+            color: white;
+            text-decoration: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 17px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 136, 204, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        .btn-telegram:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 136, 204, 0.5);
+        }
+
+        .btn-telegram svg {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            fill: currentColor;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @media (max-width: 480px) {
+            .quiz-card {
+                padding: 25px 20px;
+            }
+            .question {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="quiz-card" id="quiz">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress" style="width: 0%"></div>
+            </div>
+            
+            <div class="question-number" id="questionNum">1-savol (5 tadan)</div>
+            <div class="question" id="questionText">Yuklanmoqda...</div>
+            
+            <div class="options" id="options"></div>
+        </div>
+
+        <div class="quiz-card result-card" id="result">
+            <div class="result-icon">🎯</div>
+            <div class="result-badge">Moslik darajasi: 98%</div>
+            <div class="result-title">Sizda treyderlik talanti bor!</div>
+            <div class="result-subtitle">Tug'ma qobiliyatlar aniqlandi</div>
+            <div class="result-text">
+                Test natijalariga ko'ra, siz muvaffaqiyatli treyderga xos bo'lgan asosiy xislatlarga egasiz. Endi ularni to'g'ri bilim yordamida rivojlantirish qoldi.
+            </div>
+            
+            <div class="traits">
+                <div class="trait">
+                    <div class="trait-icon">✓</div>
+                    <div class="trait-text">Tahliliy fikrlash qobiliyati</div>
+                </div>
+                <div class="trait">
+                    <div class="trait-icon">✓</div>
+                    <div class="trait-text">Qaror qabul qilish mahorati</div>
+                </div>
+                <div class="trait">
+                    <div class="trait-icon">✓</div>
+                    <div class="trait-text">O'rganishga bo'lgan tayyorlik</div>
+                </div>
+                <div class="trait">
+                    <div class="trait-icon">✓</div>
+                    <div class="trait-text">Tavakkalga (riskka) to'g'ri yondashuv</div>
+                </div>
+                <div class="trait">
+                    <div class="trait-icon">✓</div>
+                    <div class="trait-text">O'sish uchun katta potensial</div>
+                </div>
+            </div>
+
+            <a href="https://t.me/mustaqil_trader" class="btn-telegram" target="_blank">
+                <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+                Talantni Telegram'da rivojlantirish
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Muhim qarorlarni odatda qanday qabul qilasiz?",
+                options: [
+                    "Barcha plyus va minuslarni hisobga olaman — bu mantiqiy",
+                    "Intuitsiyamga quloq solaman — u kamdan-kam pand beradi",
+                    "Vaziyatni tahlil qilaman va tez harakat qilaman",
+                    "Maslahatlashaman, lekin qarorni o'zim qabul qilaman"
+                ],
+                correct: null
+            },
+            {
+                question: "Agar biror narsa rejadagidek ketmasa, nima qilasiz?",
+                options: [
+                    "Xotirjamlikni saqlab, yechim izlayman",
+                    "Yangi sharoitlarga tezda moslashaman",
+                    "Xatoni tahlil qilib, yo'nalishni to'g'rilayman",
+                    "Vahimaga tushmayman — bu jarayonning bir qismi"
+                ],
+                correct: null
+            },
+            {
+                question: "Yangi narsalarni o'rganishga munosabatingiz qanday?",
+                options: [
+                    "Har kuni yangi bilim olishni yaxshi ko'raman",
+                    "Amaliy foydasini ko'rsam, juda tez o'rganaman",
+                    "Ko'nikmalarimni rivojlantirishga vaqt ajratishga tayyorman",
+                    "Doimiy ravishda o'z ustimda ishlayman — bu muhim"
+                ],
+                correct: null
+            },
+            {
+                question: "Ishda siz uchun nima muhimroq?",
+                options: [
+                    "Mustaqillik va harakatlar erkinligi",
+                    "O'sish va rivojlanish imkoniyati",
+                    "Daromad faqat mening harakatlarimga bog'liqligi",
+                    "Boshliqlarsiz erkin ish grafigi"
+                ],
+                correct: null
+            },
+            {
+                question: "Moliya sohasida tajribangiz qanday?",
+                options: [
+                    "Investitsiyalar va bozorlarga qiziqaman",
+                    "Shaxsiy byudjetimni boshqarishni bilaman",
+                    "Pulni ko'paytirish yo'llarini o'rganmoqchiman",
+                    "Moliyaviy savodxonlik muvaffaqiyat kaliti ekanini tushunaman"
+                ],
+                correct: null
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionNum').textContent = `${currentQuestion + 1}-savol (${questions.length} tadan)`;
+            document.getElementById('questionText').textContent = q.question;
+            
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progress').style.width = `${progress}%`;
+            
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+            
+            const letters = ['A', 'B', 'C', 'D'];
+            
+            q.options.forEach((option, index) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.innerHTML = `
+                    <div class="option-letter">${letters[index]}</div>
+                    <div>${option}</div>
+                `;
+                div.onclick = () => nextQuestion();
+                optionsDiv.appendChild(div);
+            });
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
